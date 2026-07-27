@@ -1,0 +1,21 @@
+{
+  "name": "engineering-discipline",
+  "displayName": "Engineering Discipline",
+  "version": "1.0.1",
+  "description": "Evidence-backed engineering standards for writing production code, slicing and reviewing PRs, authoring tests, running pre-push gates, and merging \u2014 on any stack.",
+  "homepage": "https://github.com/abhimanyusingh-gh/software-craftsmanship",
+  "repository": "https://github.com/abhimanyusingh-gh/software-craftsmanship",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "engineering-standards",
+    "testing",
+    "accessibility",
+    "multi-tenancy",
+    "pull-requests",
+    "code-quality"
+  ],
+  "author": {
+    "name": "abhimanyusingh-gh"
+  }
+}
