@@ -1,0 +1,30 @@
+{
+  "name": "software-craftsmanship",
+  "description": "Engineering skills for Claude Code, distilled from production codebases and published with the review-finding data behind each rule.",
+  "owner": {
+    "name": "abhimanyusingh-gh",
+    "url": "https://github.com/abhimanyusingh-gh"
+  },
+  "plugins": [
+    {
+      "name": "engineering-discipline",
+      "source": "./",
+      "description": "Evidence-backed engineering standards for writing production code, slicing and reviewing PRs, authoring tests, running pre-push gates, and merging \u2014 on any stack.",
+      "homepage": "https://github.com/abhimanyusingh-gh/claude-skills",
+      "repository": "https://github.com/abhimanyusingh-gh/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "code-review",
+        "engineering-standards",
+        "testing",
+        "accessibility",
+        "multi-tenancy",
+        "pull-requests",
+        "code-quality"
+      ],
+      "author": {
+        "name": "abhimanyusingh-gh"
+      }
+    }
+  ]
+}
