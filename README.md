@@ -1,4 +1,4 @@
-# claude-skills
+# software-craftsmanship
 
 Skills for [Claude Code](https://claude.com/claude-code).
 
@@ -27,16 +27,16 @@ Progressive disclosure is the point: `SKILL.md` stays small enough to carry no r
 As a plugin, which gives you versioning and updates:
 
 ```
-/plugin marketplace add abhimanyusingh-gh/claude-skills
+/plugin marketplace add abhimanyusingh-gh/software-craftsmanship
 /plugin install engineering-discipline@software-craftsmanship
 ```
 
 Or symlink it directly, if you'd rather track `main` and edit in place:
 
 ```bash
-git clone https://github.com/abhimanyusingh-gh/claude-skills.git
+git clone https://github.com/abhimanyusingh-gh/software-craftsmanship.git
 mkdir -p ~/.claude/skills
-ln -s "$(pwd)/claude-skills/skills/engineering-discipline" ~/.claude/skills/engineering-discipline
+ln -s "$(pwd)/software-craftsmanship/skills/engineering-discipline" ~/.claude/skills/engineering-discipline
 ```
 
 For a single project rather than every project, link into `<project>/.claude/skills/` and commit it so the whole team picks it up.

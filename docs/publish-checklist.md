@@ -50,7 +50,7 @@ claude plugin validate . --strict
 Then a real install round-trip from a scratch directory:
 
 ```
-/plugin marketplace add /path/to/claude-skills
+/plugin marketplace add /path/to/software-craftsmanship
 /plugin install engineering-discipline@software-craftsmanship
 /reload-plugins
 /engineering-discipline
