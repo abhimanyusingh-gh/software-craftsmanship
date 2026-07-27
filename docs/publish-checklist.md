@@ -102,3 +102,17 @@ Load the skill in a fresh session against a repo on a **different stack from the
 ## 7. Version
 
 Bump `version` in `.claude-plugin/plugin.json`. It is the only place the version is set — `plugin.json` silently wins over the marketplace entry — and installed users receive nothing until it changes.
+
+## 8. Repository conventions — do not "fix" these
+
+**`main` requires a pull request from everyone, including admins.** Zero approvals are
+required, so the merge click is the approval and there is no self-approval deadlock.
+Force pushes and branch deletion are blocked. Deliberate: nothing reaches `main`
+without a PR someone explicitly merges.
+
+**Squash-merge commits carry `GitHub <noreply@github.com>` as committer, and the
+account's display name as author.** That is a consequence of merging through the
+platform, and it is accepted. Do **not** rewrite history, force-push, or lift branch
+protection to make committer lines uniform — the protection is worth more than the
+cosmetic consistency. Author commits locally under the repository's configured
+identity and let the merge commit be whatever the platform stamps.
