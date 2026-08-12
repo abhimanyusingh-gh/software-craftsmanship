@@ -44,6 +44,8 @@ Backward compatibility is non-negotiable throughout: additive schema fields, dua
 
 Derive the actual commands from the repo — the lockfile, the task-runner scripts, the CI workflow — and record them in the project's `CLAUDE.md` on first use. The **order and the invariants** are the rule; the commands are the project's.
 
+**Rebase off the current tip of the base branch before running any gate.** A branch that is behind the base passes its own gates while conflicting with recent merges already on main. Immediately before step 1: `git fetch origin && git rebase origin/<base-branch>`. Resolve any conflicts in the same agent session. Confirm currency with `git merge-base --is-ancestor origin/<base-branch> HEAD` before pushing — if it exits non-zero, the branch is still behind. Never open a PR on a branch that is not current against its base.
+
 1. **Force-clean and rebuild `<shared>` first.** Any package other workspaces compile against gets its build output deleted and rebuilt from scratch. Incremental builds do not reliably refresh stale output, and a worktree resolving a shared package to another branch's build reports failures that don't exist.
 2. **Type-check every workspace**, whole-program, not per-file.
 3. **Run the full test suite per workspace** — no path filter, no changed-files scoping.
