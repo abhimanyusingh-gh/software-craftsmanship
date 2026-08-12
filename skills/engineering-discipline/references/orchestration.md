@@ -12,6 +12,8 @@ It reads specs, slices work, spawns agents, reviews returned PRs, and summarises
 
 **Every parallel agent gets an isolated work path.** Prefer the harness's worktree isolation; fall back to adding a git worktree under a temp path keyed by a short id. Never let two agents share one checkout.
 
+**Branch from a freshly-fetched remote ref.** Run `git fetch origin` immediately before creating the worktree or checking out the base branch. A stale local ref silently bases the branch on an older main, causing a later rebase that touches files outside the PR's scope and contaminates the diff.
+
 Symptoms of violation: HEAD swapping to a sibling's branch mid-shell-call, stashes auto-popping from another agent's pull, `git status` showing unfamiliar files, `git log` showing a sibling's commit, a PR opened with mismatched contents, an unexpected dependency install. Stay in the isolated path for the whole session — never change directory back to the primary checkout.
 
 Reviewer agents don't need a checkout at all: read the diff through the platform API rather than physically checking out a branch in a contested workspace.
