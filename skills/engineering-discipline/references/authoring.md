@@ -11,6 +11,8 @@ Rules are ordered by how often the defect actually occurs, most frequent first.
 5. **SOLID** — single responsibility per unit; depend on abstractions at boundaries.
 6. **DRY** — search for the existing helper before writing a new one.
 
+**TOUCH-BLAST — a change alters behaviour only on the paths it requires.** Restoring, relocating, or retyping a shared field means restoring its *original* mapping, not authoring new behaviour for a path the change doesn't otherwise touch. When a shared type changes, diff every consumer path against the base branch — a path the change has no reason to touch, showing a behavioural diff, is unintended blast radius. Bend the new path to the existing domain model; don't retype a shared field to suit it and leave existing consumers absorbing a conversion they never needed. Verify by diff, not inspection: the untouched path's diff is empty, stated as a gate. Distinct from **Debloat on touch** above: that licenses *removing* dead code around your edit, never *changing* how a live path behaves.
+
 Reactive bug-fixing after merge is the failure mode this replaces.
 
 ## Code reuse
@@ -24,6 +26,8 @@ Reactive bug-fixing after merge is the failure mode this replaces.
 **REUSE-WRAPPER — wrappers that add no behaviour are a defect.** A hook that only calls one store action, or a service function that only forwards one API call, is a layer for nothing — collapse it to direct use. Name things after the action (`selectItem`), not the implementation (`useEnsureItemSelected`).
 
 **REUSE-SIBLING — two hooks or services hitting the same endpoint is one too many.** Near-identical fetchers that return disagreeing shapes for the same resource are the most common form of this defect. Grep the endpoint before writing a consumer of it.
+
+**REUSE-CONTRACT — response types are not shared logic.** The reuse mandate covers duplicated logic, not one response type serving many endpoints. A response type is a contract; sharing one couples the contracts of every endpoint that returns it — a field added for one consumer propagates to all, and a transitional field becomes unremovable because removing it is a simultaneous breaking change across N endpoints. Duplicating field declarations is cheap; coupling contracts is not. A new endpoint intended to outlive or be extracted from the current system gets its own response type. Distinct from `REUSE-SIBLING`, which is about callers, not shapes.
 
 ## Layering
 
@@ -49,6 +53,8 @@ Reactive bug-fixing after merge is the failure mode this replaces.
 **Wire it** when it is *capability*: it implements behaviour the spec, design source, issue, or API contract requires, and the only thing missing is the call site. Deleting it deletes the feature. In that case, in the same PR: wire it to its real consumer, cover it with a test, and say so in the PR body.
 
 The test: would a reader of the spec expect this behaviour to exist? If yes, the defect is the missing wiring, not the unused symbol. Never resolve a dead-code flag on a spec-required function by deleting it and filing "re-implement later" — that is scope loss disguised as cleanliness. An integration whose credentials are already in the environment is capability, not scaffolding.
+
+**A clean grep answers "is this read today," not "does the domain require this."** A field with no current reader may still be load-bearing — for a consumer that doesn't exist yet, or for a distinction the code has no other way to make. "Verified zero consumers" is evidence for the usage question only, and is routinely presented as if it settled the semantic one. Before deleting a domain field, state what it *means* and what becomes unrepresentable without it: a nullable response field can't tell an empty text message from an image carrying no text without a `type` alongside it. Deleting a field to avoid writing a second mapper is the same defect from the other direction — two adapters parsing two wire formats into one domain type is what adapters are for.
 
 If you cannot tell which case you are in, stop and ask. Do not delete.
 

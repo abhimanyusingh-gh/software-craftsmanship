@@ -37,6 +37,27 @@ Scope is resolved once, in middleware, from the authenticated principal — neve
 - Where a path segment does name a scope, a dedicated guard asserts the authenticated principal owns that segment before the handler runs — resolution and ownership are two checks, not one.
 - The resolved scope is stamped onto every created record at the boundary, not by each writer remembering to pass it.
 
+## SCOPE-NOOP — verify the helper's implementation, not its name
+
+A shared authorization helper that returns without checking for some class of caller makes every call site read as guarded when it is not.
+
+- A permission helper with `case SERVICE_ACCOUNT: break;` — commented as "service accounts are assumed pre-authorized" — routes every `Actor`-typed authorization overload through a check that can never throw for service callers. Three endpoints inherit the silent no-op without a line of their own that says so.
+- When a caller class is exempt, the exemption belongs at the call site where it's visible in review, not buried in a shared helper where it's inherited silently.
+
+## SCOPE-NARROW — filters narrow the boundary, they never widen it
+
+When an endpoint accepts client-supplied filters alongside an actor-derived boundary, the effective scope is the intersection. A filter must never be the thing that grants access.
+
+- A caller class carrying no inherent boundary of its own is **required** to supply a narrowing filter — never defaulted to unbounded. Unbounded is not "allowed to see everything"; it means the request cannot be safely served and must be rejected.
+- A lookup endpoint taking `?patientId=` chosen by the caller lets the caller name its own scope. Invert it: the boundary derives from the authenticated actor, and filters only intersect within it.
+
+## SCOPE-OPAQUE — not-found and not-permitted are indistinguishable
+
+On lookup-by-identifier, "does not exist," "is soft-deleted," and "exists but is outside your boundary" return the same not-found response. Distinguishing them lets a caller enumerate identifiers and confirm the existence of records in other scopes.
+
+- The authorization failure is converted to not-found at the boundary, never propagated as a distinct status.
+- Honest tradeoff: a legitimate caller debugging a permissions problem sees not-found rather than forbidden.
+
 ## SCOPE-PATH — object storage, file paths, and cache keys are scoped too
 
 Blob keys, upload prefixes, export filenames, and cache keys embed the scope key: `uploads/<scope>/<entity>/<id>`, never `uploads/<entity>/<id>`. Ownership is verified from the path's scope segment on read, not from the requested id alone. A signed URL over an unscoped path is the same leak with a longer half-life.
