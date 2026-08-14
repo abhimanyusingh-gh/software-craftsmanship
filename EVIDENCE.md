@@ -103,9 +103,9 @@ These seven came out of the corpus and are new in this version. They are the rea
 | Naming and test-id taxonomy drift | 18 raises / 15 PRs. Test ids are load-bearing for e2e rules the skill already mandated, so this was a coherence gap. | `NAME-*`, `TESTID-*` |
 | Silent partial failure in bulk operations | ~8 raises / 7 PRs. Sequential awaits over N ids where item 3 fails after 1 and 2 committed, then a rollback restores the full pre-mutation snapshot. | `BULK-*` |
 
-## Six rules from a single production session
+## Seven rules from a single production session
 
-Not from the two-repo corpus above — these six came from real defects found in one later production review session, reported here as instance counts rather than regex-counted raises across a corpus.
+Not from the two-repo corpus above — these seven came from real defects found in one later production review session, reported here as instance counts rather than regex-counted raises across a corpus.
 
 | Defect class | Evidence | Where it landed |
 |---|---|---|
@@ -113,6 +113,7 @@ Not from the two-repo corpus above — these six came from real defects found in
 | Client-supplied filter standing in for the authorization boundary | 1 instance — a lookup endpoint took `?patientId=` chosen by the caller; inverted so the boundary derives from the authenticated actor. | `SCOPE-NARROW` |
 | A usage search licensing deletion of a domain field | 1 instance — a message `type` field dropped after a grep found no readers; its absence made an empty text message indistinguishable from an image with no caption, and a triaging consumer silently treated images as empty. | `DEAD-CAPABILITY` (extended) |
 | Foreground gate abandoned mid-run and reported as complete | 2 instances — a backgrounded Maven suite stopped with no live child, reported as still running; a Testcontainers suite that could not start for lack of a Docker daemon, correctly reported as not-run rather than passing. | `orchestration.md` gates (new) |
+| A restored shared field retyped instead of restored as-was | 1 instance — a field deleted from a domain model during a client migration came back after review typed differently from the original, forcing an unrelated legacy mapper to invent a UTC assumption converting a display-formatted date; restoring the original type removed the need for any conversion. | `TOUCH-BLAST` |
 
 `SCOPE-OPAQUE` and `REUSE-CONTRACT` are included in this version on the same review's judgment call rather than a distinct logged instance; keep that in mind when weighing them against the rest of this table.
 

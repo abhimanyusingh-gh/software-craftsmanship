@@ -11,6 +11,8 @@ Rules are ordered by how often the defect actually occurs, most frequent first.
 5. **SOLID** — single responsibility per unit; depend on abstractions at boundaries.
 6. **DRY** — search for the existing helper before writing a new one.
 
+**TOUCH-BLAST — a change alters behaviour only on the paths it requires.** Restoring, relocating, or retyping a shared field means restoring its *original* mapping, not authoring new behaviour for a path the change doesn't otherwise touch. When a shared type changes, diff every consumer path against the base branch — a path the change has no reason to touch, showing a behavioural diff, is unintended blast radius. Bend the new path to the existing domain model; don't retype a shared field to suit it and leave existing consumers absorbing a conversion they never needed. Verify by diff, not inspection: the untouched path's diff is empty, stated as a gate. Distinct from **Debloat on touch** above: that licenses *removing* dead code around your edit, never *changing* how a live path behaves.
+
 Reactive bug-fixing after merge is the failure mode this replaces.
 
 ## Code reuse
