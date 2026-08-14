@@ -26,6 +26,12 @@ Reviewer agents don't need a checkout at all: read the diff through the platform
 
 **Cluster stalls mean the host slept.** If 2+ background agents trip the watchdog in the same window, the machine suspended — the briefs were fine. Relaunch each verbatim: same brief, same scope. Don't narrow scope, strip test commands, split into pieces, or offer the owner options A/B/C for what is an environmental fact. A *single* isolated stall can still be a brief problem — an overly long operation, or no heartbeats.
 
+## Gates
+
+**Run gates in the foreground.** An agent that backgrounds a long build or test run and then stops loses the result and reports a stall as if it were a completion. Run with a generous timeout; re-invoke and keep waiting rather than abandoning a gate mid-run.
+
+**A gate that could not run is reported as not-run, explicitly and by name.** Never omitted, never folded into a pass. An environment-blocked gate — no container runtime, no browser binary — is a hole in the evidence, not a green light.
+
 ## Briefs
 
 **Every worker brief restates the non-negotiables verbatim.** Agents drift without explicit re-statement. A terse pointer is not enough; paste the rules.
