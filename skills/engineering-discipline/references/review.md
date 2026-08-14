@@ -16,6 +16,8 @@ An automated reviewer is a real reviewer for this purpose — but it is not a hu
 
 Beyond the class list, verify the load-bearing claims of the PR body actually hold — gate numbers, reused symbols, the migration's remaining-consumer list, the design-source citations. A body claim you cannot verify from the diff is itself a finding.
 
+**REVIEW-DISCLOSED — a disclosed deviation is not an approved one.** "Flagged in the PR body," "verified zero consumers," "noted as a tradeoff" establish honesty, not correctness. Review the change exactly as if it had been silent. An articulate justification reads as diligence and tempts the reviewer to relay the flag onward instead of asking whether the change belonged in the diff at all — ask that question, not whether the tradeoff is acceptable. A disclosed change to an unrelated path is still unrelated. Applies with extra force to agent output, where a fluent self-justification is cheap and costs the author nothing. The review-side counterpart to `TOUCH-BLAST`: that rule keeps the change out of the diff, this one catches it when the disclosure talks a reviewer past it instead.
+
 **Severity:** multiple correctness or duplication failures → request-changes. A single one → should-fix. Borderline style (a 51-LOC function against a 50 threshold) → nit, advisory. A dropped scope key, a deleted capability, a deleted shape with a live consumer, or an unbounded in-memory sort is a blocker regardless of how small the diff is.
 
 ## Write reviews as prose
