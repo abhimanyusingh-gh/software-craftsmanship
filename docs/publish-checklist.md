@@ -40,7 +40,8 @@ Known-benign hits, so a future maintainer doesn't chase them:
 
 - The gate sequence in `workflow.md` carries one `yarn`/`tsc` block under an explicit *"Example — derive your own"* label. That block is the only permitted toolchain reference.
 - `defect-classes.md` ships reviewer greps that necessarily name concrete skip markers. Its heading says "adapted to the project's language".
-- `authoring.md` uses "vendor" in the plain-English sense of a third-party supplier, and quotes `"PR 2 follow-up"` as an example of a *banned* test name.
+- `authoring.md` and `defect-classes.md` use "vendor" in the plain-English sense of a third-party supplier, and `authoring.md` quotes `"PR 2 follow-up"` as an example of a *banned* test name.
+- The origin-domain grep's `tax` pattern collides with "taxonomy", which several references use for naming and test-id schemes. Substring noise, not residue.
 - `accessibility.md` names web-platform APIs (`aria-disabled`, `:focus-visible`, `prefers-reduced-motion`). Those are platform standards, not a stack choice.
 - `verification.md` quotes the explain-away comment phrases it tells reviewers to grep for ("removed in", "no longer"). Those are the detection strings, not residue.
 
@@ -72,6 +73,12 @@ grep -oE '`[A-Z0-9]+-[A-Z*]+`' EVIDENCE.md | tr -d '`' | sort -u
 ```
 
 Every named rule has an evidence row; every evidence row names a rule that exists.
+
+Four known-benign non-rule matches, so a future maintainer doesn't chase them. The `[A-Z0-9]+-[A-Z]+` pattern cannot tell a rule ID from illustrative text:
+
+- `FOLD-THEN` — `review.md` quotes `Verdict: FOLD-THEN-SHIP` as an example of the *banned* compliance-form review style.
+- `51-LOC` — a numeric example in `review.md` illustrating the function-length threshold.
+- `MUST-FIX`, `SHOULD-FIX` — `EVIDENCE.md` quotes an external automated reviewer's seven-level severity vocabulary. This skill's own vocabulary is the lowercase three, defined in `SKILL.md`.
 
 ## 4. The contract card is a return format
 
