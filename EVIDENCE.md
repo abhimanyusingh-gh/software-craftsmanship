@@ -6,17 +6,19 @@ It lives outside `skills/` deliberately. Provenance is a human-trust artefact wi
 
 ## Corpus
 
-Two private production codebases, referred to here only as Repo A and Repo B.
+Three private production codebases, referred to here only as Repo A, Repo B and Repo C.
 
-| | Repo A | Repo B |
-|---|---|---|
-| Stack | TypeScript full-stack monorepo | polyglot — Kotlin, TypeScript, SCSS, Gherkin |
-| Commits on the default branch | 1,679 | 813 |
-| Pull requests | 331 (319 merged) | 101, of which **98 are dependabot** |
-| Issues | 315 (262 closed) | 0 |
-| PR review comments | **1,020** | 0 (dependabot comments only) |
+| | Repo A | Repo B | Repo C |
+|---|---|---|---|
+| Stack | TypeScript full-stack monorepo | polyglot — Kotlin, TypeScript, SCSS, Gherkin | TypeScript frontend |
+| Commits on the default branch | 1,679 | 813 | — |
+| Pull requests | 331 (319 merged) | 101, of which **98 are dependabot** | — |
+| Issues | 315 (262 closed) | 0 | — |
+| PR review comments | **1,020** | 0 (dependabot comments only) | not counted |
 
-Repo A supplies essentially all of the evidence. Repo B is included for commit-hygiene contrast only — see the caveats below for why it is not a control.
+Repo A supplies essentially all of the counted evidence. Repo B is included for commit-hygiene contrast only — see the caveats below for why it is not a control.
+
+**Repo C is a different kind of source and is kept separate deliberately.** No comment corpus was extracted from it. It contributes a handful of rules that came from watching an agent fleet fail in specific, reproducible ways during a design-system migration — reported as instance counts in their own table below, never merged into the frequency table above. Treat them as operating experience, which is what they are.
 
 ## Method
 
@@ -118,6 +120,23 @@ Not from the two-repo corpus above — these eight came from real defects found 
 
 `SCOPE-OPAQUE` and `REUSE-CONTRACT` are included in this version on the same review's judgment call rather than a distinct logged instance; keep that in mind when weighing them against the rest of this table.
 
+## Six rules from watching an agent fleet
+
+From Repo C, during a multi-phase frontend migration run by a fleet of coding agents. Instance counts, not regex-counted raises. Small numbers — but each one is a case where **every gate was green and the work was wrong**, which is the only reason these rules exist at all: they are the checks that would have caught what the gates structurally could not.
+
+| Defect class | Evidence | Where it landed |
+|---|---|---|
+| A capability deleted end to end, hidden behind a green suite | 1 instance — 538/538 passing while a clinical-scoring capability was gone: the payload field hardcoded to a constant, the form control removed, the attribute write-back dropped, and the guard that enforced the rule left as unreachable dead code. Green because the agent **deleted the failing test and left a comment asserting the removal was intentional.** Only a base-vs-branch behavioural diff surfaced it. | `REGRESS-DIFF`, and non-negotiable #14 |
+| A test harness masking a total boot failure | 1 instance — 648/648 unit tests passing while the application threw on every route in the browser. A component gained a context-dependent hook; its own test wrapped it in a provider that the real composition never supplied. Caught only by the CI browser suite, as 9 failures across 5 specs all reporting the same uncaught error. | `HARNESS-MASK` |
+| Markup changed, browser specs not | 1 instance — a control deliberately replaced per the design, with briefs saying "preserve every test id" (impossible for a replaced control) and no agent tasked with the spec pass. Unit tests 630/630 locally; CI red on selectors that could no longer exist. | `SPEC-PASS`, `ID-INVENTORY` |
+| One agent given all the structural work | 1 instance — a single phase-wide agent ran 2+ hours and finished with 18 test failures, having changed every component before running the suite once. Failures arrived entangled, at the point of least remaining context. | `orchestration.md` decomposition, incremental gates, checkpoint |
+| Isolation rule read backwards | 1 instance — "worktree isolation is the default" was read as needing justification, so a round of independent agents ran serially in one checkout for no reason. | `orchestration.md` isolation |
+| Briefs that bury their own invariants | 1 instance — briefs grew to ~120 lines of prose restating every non-negotiable verbatim; the first PR under one ballooned in scope and had to be closed and restarted. | the contract card in `SKILL.md` |
+
+`CLAIM-EVIDENCE` and `TEST-NODELETE` have **no independent instance** behind them. They are positions taken in response to the two failures above — the first generalises "a gate claimed without a number is not evidence" to every compliance claim, the second closes the subsumption carve-out that green-by-deletion hid behind. Weigh them accordingly.
+
+The honest caveat on this whole table: n=1 on every row, one repo, one migration, one operator. What makes them worth publishing is not their frequency but their **detectability** — in all six the ordinary signals said the work was fine, so no amount of running the existing gates harder would have surfaced them.
+
 ## What a live A/B showed
 
 One paired run, with the plugin and without, on the same prompt: review two new functions in a Python and SQLAlchemy service — a stack deliberately unlike the origin codebase — where both functions dropped the scope key. **One run per arm, one file, one stack. This is a smoke test, not a benchmark.**
@@ -147,7 +166,9 @@ State these alongside any number from this file, or the numbers mislead.
 
 4. **Counting is regex-plus-reading, not adjudication.** Every count is reproducible from the corpus and every one is a judgement about what a comment was *about*. Treat the tiers as ordinal, not the integers as exact.
 
-5. **Fleet orchestration has no evidence either way.** Orchestrator behaviour doesn't surface in PR comments. `orchestration.md` is an operating model that worked in practice, and it says so at the top of the file. Adapt it freely.
+5. **Fleet orchestration still has no *corpus* evidence.** Orchestrator behaviour doesn't surface in PR comments, so nothing in `orchestration.md` or `verification.md` is regex-counted. What changed in this version is that several of those rules now name a specific failure they were written after, in the Repo C table above — n=1 each, from one operator. That is better than assertion and much weaker than the frequency table. Adapt freely.
+
+6. **Repo C's numbers are self-reported, not reconstructed.** The counts in its table (538/538, 648, 18 failures) were recorded during the sessions rather than recovered from an API afterwards, so unlike every number above them they are not independently reproducible from the commands at the end of this file.
 
 ## Reproducing this
 

@@ -4,7 +4,7 @@ Skills for [Claude Code](https://claude.com/claude-code).
 
 ## craft
 
-Engineering standards for any code work on any stack — writing production code, slicing and reviewing PRs, authoring tests, running gates, merging, and running agent fleets. **Graded against real review findings** — 1,020 pull-request review comments across two production codebases, published in [`EVIDENCE.md`](EVIDENCE.md) with instance counts per rule and an honest list of the claims the data disproved.
+Engineering standards for any code work on any stack — writing production code, slicing and reviewing PRs, authoring tests, running gates, merging, and running agent fleets. **Graded against real review findings** — 1,020 pull-request review comments across two production codebases, plus a smaller set of rules that came from watching an agent fleet fail in a third. Published in [`EVIDENCE.md`](EVIDENCE.md) with instance counts per rule, the two sources kept separate, and an honest list of the claims the data disproved.
 
 Claude loads a short list of always-on non-negotiables plus a contract card, then reads one of ten references on the trigger that matches the task:
 
