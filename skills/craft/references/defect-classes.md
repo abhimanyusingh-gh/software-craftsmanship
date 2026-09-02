@@ -27,6 +27,18 @@ Severity ceilings are defaults; a class can escalate on impact but never silentl
 | 19 | Magic number | a bare numeric literal that could change with regulation, customer need, or ops tuning — weights and scoring factors especially; a local array re-listing what a typed constant already enumerates | should-fix | `CONFIG-*` |
 | 20 | Narrative comment | prose restating the code; a comment explaining what an enum value means; a test-file invariants docstring; ceremony added by a fold agent | nit | `authoring.md` style |
 
+## Three classes the diff alone cannot show
+
+The twenty above are visible in the diff. These are not — each one is defined by something *absent*, so reviewing only the code that is present will miss all three. They are ordered by nothing; they come from operating experience rather than the review corpus. Detection procedures are in `verification.md`.
+
+| Class | The shape to look for | Severity | Rule |
+|---|---|---|---|
+| Capability deleted with its test | a shrinking test count; a comment narrating a removal; a field pinned to a literal that was computed before; a guard whose input nothing sets | blocker | `TEST-NODELETE`, `REGRESS-DIFF` |
+| Harness masking a real break | a test supplying a provider, router, or config the application never mounts; a suite green while the app is dead on boot; browser failures that are all one uncaught error | blocker | `HARNESS-MASK` |
+| Markup changed, specs not | a structural change with no browser-suite diff; a replaced control whose old selector still appears in shared support files | should-fix; deleting an assertion to go green is a blocker | `SPEC-PASS`, `ID-INVENTORY` |
+
+A green gate is not a defence against any of them. Ask the base-branch question — *what did this used to do that it no longer does* — before accepting the numbers.
+
 ## Active hunting, not passive scanning
 
 Don't accept "looks fine". For each class above, form the specific question and answer it from the diff. Every flag proposes a concrete fix — extract this helper, lift to a table, wrap in an options object, add this index — never just a diagnosis.
@@ -42,6 +54,7 @@ style=\{\{|style="                # inline CSS
 \.skip\(|\.todo\(|xit|xdescribe   # skip markers — compare against the declared baseline
 try\s*\{                          # exception swallows in e2e — each hit needs justification
 disabled(=|\s|>)                  # candidates for aria-disabled
+removed in|no longer|was removed  # comments narrating a deletion — read the base version
 ```
 
 A grep hit is a lead, not a finding. Read the surrounding code before reporting it.

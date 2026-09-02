@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "engineering-discipline",
+      "name": "craft",
       "source": "./",
-      "description": "Evidence-backed engineering standards for writing production code, slicing and reviewing PRs, authoring tests, running pre-push gates, and merging \u2014 on any stack.",
+      "description": "Engineering standards for any code work on any stack — writing production code, slicing and reviewing PRs, authoring tests, running gates, merging, and running agent fleets.",
       "homepage": "https://github.com/abhimanyusingh-gh/software-craftsmanship",
       "repository": "https://github.com/abhimanyusingh-gh/software-craftsmanship",
       "license": "MIT",
