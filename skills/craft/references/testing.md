@@ -46,7 +46,7 @@ Test ids are a public contract between the product and the e2e suite. Drifting o
 
 **TESTID-SCHEME — one scheme, declared once.** `<surface>-<element>-<variant>`, kebab-case, no indices, no user data, no copy strings. Declare the scheme in the e2e config or a shared ids module and derive ids from a typed builder wherever the set is finite, so a rename is a compile error rather than a red suite. Segments come from the same taxonomy as the component they name — an element under a `filter-picker` is not `filter-trigger`.
 
-**TESTID-STABLE — never key a selector on copy, class name, DOM position, or index.** Text and layout change for design reasons; the selector must not. Renaming or removing a test id is a contract change: grep the suite in the same PR and update every consumer.
+**TESTID-STABLE — never key a selector on copy, class name, DOM position, or index.** Text and layout change for design reasons; the selector must not. Renaming or removing a test id is a contract change: grep the suite in the same PR and update every consumer. Before a refactor, inventory them all first and give each a disposition — `ID-INVENTORY` in `verification.md`.
 
 **TESTID-COVER — every element the design enumerates carries an id.** Interactive controls, rows, empty states, error states, and loading affordances included — the element-existence assertions below have nothing to bind to otherwise.
 
@@ -110,9 +110,15 @@ When writing a test, ask:
 
 New test *files* are the exception — justify in the PR body why no existing file could host it. Reviewers spot-check 3–5 added cases against these questions and flag mock-asserting, constant-restating, and duplicate coverage.
 
-**Subtractive diffs are a positive signal** when a stronger test in the same PR subsumes weaker ones. Celebrate it, don't flag it as lost coverage.
+**Subtractive diffs are a positive signal** when a stronger test in the same PR subsumes weaker ones — under the burden of proof in `TEST-NODELETE` (`verification.md`): the subsuming test is named in the PR body and shown to fail against the pre-change code. Absent that, a shrinking test count is the signature of green-by-deletion, not of consolidation.
 
 Never cull: coverage minimums for critical business invariants, regression tests tied to historical bugs (load-bearing tribal knowledge), integration tests against a real datastore.
+
+## Read the tests before rewriting the code
+
+Before changing a component, read its test file and map every assertion to the element it targets. Then implement. Doing it in this order surfaces compatibility breaks before the code is written; doing it after turns them into a fix loop, and the loop is where tests get quietly deleted to make it stop.
+
+A test that needs a provider the application does not supply proves nothing about the application — `HARNESS-MASK` in `verification.md`.
 
 ## Every manual bug becomes a test
 

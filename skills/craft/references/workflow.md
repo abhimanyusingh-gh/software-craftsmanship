@@ -24,9 +24,13 @@ Belt-and-suspenders on state: the agent flips state inline as part of the action
 
 **Title format:** `<tracker-id>: <short description>`. Conventional-commit prefixes stay on the commits — orthogonal.
 
+**The title tells the story of the change** — what the reader gains from merging it. Not an echo of the epic or milestone it belongs to, and not a mechanical label. "token consolidation and infrastructure" names the bucket the work came from; "retire hardcoded colour literals and establish the token foundation" says what is now true that wasn't. Avoid opening with "add", "refactor", or "infrastructure for".
+
 **PR descriptions are plain prose for a human.** Summary (one sentence of intent), why (the user-facing reason or bug), changes (a few bullets on the *shape* of the work — "extracted this helper", "backend service for that", "frontend consumes via this hook"), smoke evidence, gate results, issue link.
 
-Banned: badges, shields, logos, colour-coded status chips, `file/path:123` citations, "locator at line NN" commentary, method-name enumerations, "N files changed" counts, implementation-mechanic explainers. The diff already shows the mechanics. Describe behaviour, not a mechanical inventory.
+Banned: badges, shields, logos, colour-coded status chips, `file/path:123` citations, "locator at line NN" commentary, method-name enumerations, "N files changed" counts, implementation-mechanic explainers, assistant or tool attribution footers and trailers. The diff already shows the mechanics. Describe behaviour, not a mechanical inventory.
+
+**Compliance artefacts go on the contract card, not in the PR body.** The reused-symbol list, the reference-read list, and the per-unit gate breakdown are how the orchestrator verifies the work; a human reviewer reading the PR wants none of them. One sentence of prose if a reuse decision is genuinely worth flagging — a deliberate divergence from an existing pattern, a security-relevant choice. Gate results stay in the body, because a reviewer needs them; the inventory does not.
 
 ## Multi-PR migrations
 
@@ -68,6 +72,8 @@ yarn e2e
 
 If anything fails, **do not push** — fix in-PR or hand back.
 
+**Open every PR as a draft.** `--draft` on creation, always. Move it to ready only once the local gates are green *and* CI has gone green on the pushed branch. A PR raised before the gates run gets reviewer attention it then wastes, and a red CI check on an open PR blocks the board rather than the author. If the gates cannot run at all — an install blocked on credentials, no container runtime — do not push and do not raise; stop and surface it.
+
 **Scoped test runs are for the inner loop only, never the gate.** Scoping to changed files misses cross-file compile failures in *other* files' fixtures and mocks; those PRs merge and break trunk for everyone. The gate mirrors the unfiltered CI command exactly. A harness flake is not an excuse to skip — re-run once, read the actual output to distinguish flake from failure, and if it's still red, report rather than ship.
 
 **A type error fails the build, pre-existing or not.** Never rationalise one as "pre-existing" without a clean rebuild; a phantom count contradicting an earlier green run on the same branch is the tell that the shared build is stale. CI needs the same treatment: any job that type-checks, tests, or builds a consumer must build the shared package first.
@@ -94,6 +100,10 @@ Report it in the PR body under a **Browser smoke** heading, concretely: surface,
 When auto-merge *is* explicitly authorized, the gate sequence is: CI green → reviewer approve-clean → no outstanding request-changes → mergeable. Approve-with-nits or any should-fix means a patch agent addresses **every** item, then re-review; only approve-clean merges. A bare comment verdict goes to the owner. Surface rather than auto-merge on: non-trivial conflict resolution, CI failures outside known flake patterns, any surprise rippling beyond the PR (design-intent change, scope expansion, broken downstream surface), and initiative completion.
 
 **Never:** skip commit hooks, amend a published commit without authorization, force-push the default branch, or bypass branch protection without explicit per-scenario authorization.
+
+**No assistant attribution anywhere** — no generated-with footers in PR bodies or comments, no co-authored-by trailers in commit messages. It clutters history and the review surface. Strip it in briefs to subagents too, since that is where it reappears.
+
+**No placeholder commits.** Never commit work-in-progress as a stand-in intended to be replaced later; commit real changes with a real message. The exception is the deliberate WIP-commit-then-push an agent makes immediately after branching to make its worktree recoverable — that one is required, and it is squashed or amended before the PR is raised.
 
 ## Documentation
 

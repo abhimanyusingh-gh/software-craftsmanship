@@ -8,9 +8,29 @@ It reads specs, slices work, spawns agents, reviews returned PRs, and summarises
 
 **Workers on the cheap model tier, orchestrator on the session model.** Pin the cheaper tier explicitly on every author, fold, code-fix, reviewer, re-review, and research agent. Never *omit* the model when the session runs a strong one — omitting inherits it onto the whole fleet. Planning and synthesis get the strong model; execution and review don't need it.
 
+## Decompose by unit, not by phase
+
+**One agent per component or module, 2–3 files each.** Never hand all the structural changes in a feature to one agent. A single agent accumulates context until failures stop being isolable — in the case this rule comes from, a whole-phase agent ran two hours and finished with 18 test failures because it changed every component before running the suite once.
+
+Two budgets, and they are different numbers. The `≤20 files` cap below is a **PR** budget. The 2–3 file cap is an **agent** budget. One PR is usually several agents.
+
+Structure the work as rounds:
+
+1. **New components** — nothing existing to break, so run them all in parallel.
+2. **Independent refactors of existing components** — parallel, provided no two agents edit the same file. Audit that before launching.
+3. **A single wiring agent, last** — sequential, and it only wires sub-components that are already implemented and tested.
+
+**Review mirrors implementation.** Don't spawn one reviewer for the whole PR when the work was decomposed. Mirror the rounds: each validation agent checks its own component against the rules, its own coverage, and its own capability preservation. The orchestrator aggregates before any push.
+
+**Incremental gates, never deferred.** Each agent runs `<unit>` after its own change and fixes red before moving on. Accumulated test debt across components is what produces the long fix loop at the end — the failures arrive together, entangled, at the point where context is most exhausted.
+
+**Set a checkpoint.** Every brief carries a budget: "if you are more than N minutes in without a clean gate run, stop and report your blockers rather than continuing to iterate." Silent long-running loops are expensive and they rarely recover on their own.
+
 ## Isolation
 
 **Every parallel agent gets an isolated work path.** Prefer the harness's worktree isolation; fall back to adding a git worktree under a temp path keyed by a short id. Never let two agents share one checkout.
+
+**Isolation is the default; the exception is narrow.** Any agent starting fresh work off a committed ref gets a worktree, and those agents run in parallel. Launch *without* isolation only when the agent must see **uncommitted changes that already exist in a specific working tree** — then give it that tree's absolute path and tell it to work there, because isolating hides the very work it was sent to finish. A clean checkout of the base branch is not that case; it is the fresh-work case, and it takes a worktree. Reading this backwards costs a whole round of parallelism.
 
 **Branch from a freshly-fetched remote ref.** Run `git fetch origin` immediately before creating the worktree or checking out the base branch. A stale local ref silently bases the branch on an older main, causing a later rebase that touches files outside the PR's scope and contaminates the diff.
 
@@ -32,20 +52,32 @@ Reviewer agents don't need a checkout at all: read the diff through the platform
 
 **A gate that could not run is reported as not-run, explicitly and by name.** Never omitted, never folded into a pass. An environment-blocked gate — no container runtime, no browser binary — is a hole in the evidence, not a green light.
 
+## Verify returned work, don't trust the report
+
+An agent's report is written by the party whose work the finding would invalidate, in the medium where a confident claim is cheapest. Treat it as a claim to check, not a result.
+
+Before pushing anything an agent hands back, the orchestrator runs `REGRESS-DIFF` from `verification.md` against the base branch. Not because agents are dishonest — because the failure this catches removes its own evidence. A capability deleted along with its test leaves a green suite, a clean diff summary, and a plausible comment explaining the removal.
+
+The same applies to the contract card. A card is only worth requiring if unfilled rows are treated as unfilled: an adjective where a number belongs, a missing gate row, an empty capability check. Send it back rather than reading past it.
+
 ## Briefs
 
-**Every worker brief restates the non-negotiables verbatim.** Agents drift without explicit re-statement. A terse pointer is not enough; paste the rules.
+**Every brief tells the agent to load `craft` itself, and pastes the contract card.** Loading is the agent's first action, before it reads a single source file; the references it read go on the card. A paraphrase of the rules in the brief is not a substitute — but neither is pasting all fourteen non-negotiables, which is what briefs used to do and how they grew to a hundred lines of prose with the invariants buried in the middle. Point at the skill, paste the card, keep the brief short.
+
+**Name safety-critical tests by exact test name** and label them blockers, rather than listing them among the acceptance criteria. A test guarding a production safety requirement should be impossible to miss in a skim.
 
 **Pre-resolve environmental blockers in the brief.** Uninstalled dependencies (mandate the install), missing fixture paths (point at the actual file), missing browser binaries (waive or provide). Never let an agent hand back on something the orchestrator could have resolved up front.
 
 ```
 Workspace:        isolation mode + fallback + "stay in this path"
-Scope:            ≤20 files including tests and types; STOP and report rather than sprawl
+Load first:       invoke `craft`; read the references for this task type; list them on the card
+Scope:            2–3 files for a component agent; ≤20 for a whole PR. STOP and report rather than sprawl
 Backward compat:  additive fields, dual writes, flags — never break a caller
 Reuse mandate:    search first, extend over clone, cite reused symbols in the body
 Grounding:        the spec docs governing this work; cite decision IDs in the body
-Invariants:       the full non-negotiables list, verbatim
-Gates:            the ordered pre-push sequence with baselines
+Invariants:       the contract card, pasted; safety-critical tests named as blockers
+Gates:            the ordered pre-push sequence with baselines; run after each unit, not at the end
+Checkpoint:       stop and report blockers past N minutes without a clean gate run
 Tracking:         the work item this closes; title format; state transitions
 No merge:         open the PR, return the URL, stop
 If blocked:       stop and report — never invent a contract, guess a schema, or bypass a check

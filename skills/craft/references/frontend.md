@@ -20,11 +20,19 @@ Concretely:
 
 ### No inline CSS
 
-**No inline style objects.** All styling — layout, colour, spacing, typography, shadow, radius — comes from stylesheets referencing design-system tokens, wired via the class attribute. Inline colour literals are equally banned. The only exception is a genuinely dynamic single value.
+**No inline style objects.** All styling — layout, colour, spacing, typography, shadow, radius — comes from stylesheets referencing design-system tokens, wired via the class attribute. Inline colour literals are equally banned.
+
+**A component library's style props are inline CSS.** Size, weight, colour, background and spacing shorthands passed as props compile to inline styles and carry every one of the problems below. A prop taking a design-system token name is not an exemption — it still writes the rule into the element. A "bridge" pattern that sets a token through an inline style while the class-based version is pending is also a violation, not a migration step.
+
+The only exception is **assigning a CSS custom property whose value is a runtime variable** — that is a token assignment the stylesheet then consumes, not a style rule. A custom property set to a literal is just an inline style with extra steps.
 
 Inline styles bypass the token system (colour drift between components), defeat the `:focus-visible` / `prefers-reduced-motion` / dark-mode media queries that live in stylesheets, and force component-file edits for what should be CSS edits.
 
 If you reach for an inline style while writing a component, stop: add a class referencing existing tokens, or add the token first and then use it via the class. Inline styles that pre-date your PR but sit on lines this diff touches get replaced under debloat-on-touch.
+
+**Source order beats specificity.** A component library that injects its styles at runtime injects them *after* the project's stylesheet, so its rules win no matter how the class is written. A plain class on such a component loses silently — the build passes, the test passes, and the colour is wrong in the browser. Escalating specificity to fight it is a losing pattern; the fix is to drop the library's component for plain markup carrying the project's class.
+
+That conversion has a cost to pay in the same PR: native elements ship none of the states the library was providing. Hand-write `:hover`, `:focus-visible`, `:disabled` and a `prefers-reduced-motion` path, or the conversion is an accessibility regression traded for a colour fix — see `accessibility.md`. Converting to native markup does preserve role, accessible name and native disabled semantics, so role- and state-based queries keep working.
 
 ## Design completeness
 

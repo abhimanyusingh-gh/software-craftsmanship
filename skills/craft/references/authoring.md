@@ -21,7 +21,7 @@ Reactive bug-fixing after merge is the failure mode this replaces.
 2. Prefer extending or parameterizing over cloning.
 3. If new code is genuinely needed, design it to *consolidate* rather than fragment — one service for every report query, not one per endpoint.
 4. When a pattern appears a second time, extract the shared primitive and refactor the first occurrence — same PR if it fits the file budget, next PR otherwise.
-5. List every reused symbol in the PR description; justify anything new.
+5. Name every reused symbol on the contract card; justify anything new. It goes on the card rather than in the PR body — see `workflow.md`.
 
 **REUSE-WRAPPER — wrappers that add no behaviour are a defect.** A hook that only calls one store action, or a service function that only forwards one API call, is a layer for nothing — collapse it to direct use. Name things after the action (`selectItem`), not the implementation (`useEnsureItemSelected`).
 
