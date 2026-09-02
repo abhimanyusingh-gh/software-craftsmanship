@@ -16,7 +16,7 @@ description: Engineering standards for any code work on any stack — writing pr
 7. **YAGNI.** Nothing beyond what the issue requires. No speculative props, no single-caller indirection, no "while I'm here" expansions.
 8. **Debloat on touch.** Editing a file means scanning the surrounding 50–100 lines for dead code, duplicated logic, repeated literals, oversized functions, mixed concerns. Fix or flag in the same commit.
 9. **Deliberate before coding.** Produce an edge-case checklist, then a one-paragraph plan stating what's guarded and what's deliberately not done — before implementation.
-10. **Tests define the product.** A red test is fixed in product code, seed data, or config. Never re-pin an assertion. Only sanctioned spec edits: compile-blocking typos, framework misuse that never caught a bug, stripping banned patterns.
+10. **Tests define the product.** A red test is fixed in product code, seed data, or config. Never re-pin an assertion — the only sanctioned edits *to an assertion* are compile-blocking typos, framework misuse that never caught a bug, and stripping banned patterns. Removing a test is a separate question with a separate bar: `TEST-NODELETE`.
 11. **Full unfiltered gates before push.** Never scope the test run to changed files as the gate. If anything is red, don't push.
 12. **Docs ship in the same commit as the change they describe.** No "docs follow-up later."
 13. **Raise and stop.** Auto-merge is off by default: run the full review loop, then surface the PR for the owner to merge.

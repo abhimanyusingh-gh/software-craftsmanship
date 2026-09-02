@@ -72,7 +72,7 @@ yarn e2e
 
 If anything fails, **do not push** — fix in-PR or hand back.
 
-**Open every PR as a draft.** `--draft` on creation, always. Move it to ready only once the local gates are green *and* CI has gone green on the pushed branch. A PR raised before the gates run gets reviewer attention it then wastes, and a red CI check on an open PR blocks the board rather than the author. If the gates cannot run at all — an install blocked on credentials, no container runtime — do not push and do not raise; stop and surface it.
+**Open every PR as a draft.** `--draft` on creation, always. Move it to ready only once the local gates are green *and* CI has gone green on the pushed branch. A PR raised before the gates run gets reviewer attention it then wastes, and a red CI check on an open PR blocks the board rather than the author. If the gates cannot run at all, do not push and do not raise; stop and surface it — a gate that could not run is reported under `CLAIM-EVIDENCE`, never assumed.
 
 **Scoped test runs are for the inner loop only, never the gate.** Scoping to changed files misses cross-file compile failures in *other* files' fixtures and mocks; those PRs merge and break trunk for everyone. The gate mirrors the unfiltered CI command exactly. A harness flake is not an excuse to skip — re-run once, read the actual output to distinguish flake from failure, and if it's still red, report rather than ship.
 

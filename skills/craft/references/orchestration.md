@@ -28,9 +28,9 @@ Structure the work as rounds:
 
 ## Isolation
 
-**Every parallel agent gets an isolated work path.** Prefer the harness's worktree isolation; fall back to adding a git worktree under a temp path keyed by a short id. Never let two agents share one checkout.
+**Every parallel agent gets an isolated work path, and isolation is the default.** Prefer the harness's worktree isolation; fall back to a git worktree under a temp path keyed by a short id. Never let two agents share one checkout.
 
-**Isolation is the default; the exception is narrow.** Any agent starting fresh work off a committed ref gets a worktree, and those agents run in parallel. Launch *without* isolation only when the agent must see **uncommitted changes that already exist in a specific working tree** — then give it that tree's absolute path and tell it to work there, because isolating hides the very work it was sent to finish. A clean checkout of the base branch is not that case; it is the fresh-work case, and it takes a worktree. Reading this backwards costs a whole round of parallelism.
+The exception is narrow. Launch *without* isolation only when the agent must see **uncommitted changes that already exist in a specific working tree** — then give it that tree's absolute path and tell it to work there, because isolating hides the very work it was sent to finish. A clean checkout of the base branch is not that case; it is the fresh-work case, and it takes a worktree. Reading this backwards costs a whole round of parallelism.
 
 **Branch from a freshly-fetched remote ref.** Run `git fetch origin` immediately before creating the worktree or checking out the base branch. A stale local ref silently bases the branch on an older main, causing a later rebase that touches files outside the PR's scope and contaminates the diff.
 
@@ -50,7 +50,7 @@ Reviewer agents don't need a checkout at all: read the diff through the platform
 
 **Run gates in the foreground.** An agent that backgrounds a long build or test run and then stops loses the result and reports a stall as if it were a completion. Run with a generous timeout; re-invoke and keep waiting rather than abandoning a gate mid-run.
 
-**A gate that could not run is reported as not-run, explicitly and by name.** Never omitted, never folded into a pass. An environment-blocked gate — no container runtime, no browser binary — is a hole in the evidence, not a green light.
+**A gate that could not run is reported as not-run, by name.** `CLAIM-EVIDENCE` in `verification.md` carries the rule and what counts as evidence; the fleet-specific half is that a stalled foreground gate and a blocked one report differently, and an agent that conflates them hands back a false green.
 
 ## Verify returned work, don't trust the report
 
@@ -62,7 +62,7 @@ The same applies to the contract card. A card is only worth requiring if unfille
 
 ## Briefs
 
-**Every brief tells the agent to load `craft` itself, and pastes the contract card.** Loading is the agent's first action, before it reads a single source file; the references it read go on the card. A paraphrase of the rules in the brief is not a substitute — but neither is pasting all fourteen non-negotiables, which is what briefs used to do and how they grew to a hundred lines of prose with the invariants buried in the middle. Point at the skill, paste the card, keep the brief short.
+**Every brief tells the agent to load `craft` itself, and pastes the contract card.** Loading is the agent's first action, before it reads a single source file; the references it read go on the card. A paraphrase of the rules in the brief is not a substitute — but neither is pasting all fourteen non-negotiables, which is what briefs used to do and how they grew to a hundred lines of prose with the invariants buried in the middle.
 
 **Name safety-critical tests by exact test name** and label them blockers, rather than listing them among the acceptance criteria. A test guarding a production safety requirement should be impossible to miss in a skim.
 
@@ -73,7 +73,7 @@ Workspace:        isolation mode + fallback + "stay in this path"
 Load first:       invoke `craft`; read the references for this task type; list them on the card
 Scope:            2–3 files for a component agent; ≤20 for a whole PR. STOP and report rather than sprawl
 Backward compat:  additive fields, dual writes, flags — never break a caller
-Reuse mandate:    search first, extend over clone, cite reused symbols in the body
+Reuse mandate:    search first, extend over clone, name reused symbols on the card
 Grounding:        the spec docs governing this work; cite decision IDs in the body
 Invariants:       the contract card, pasted; safety-critical tests named as blockers
 Gates:            the ordered pre-push sequence with baselines; run after each unit, not at the end
