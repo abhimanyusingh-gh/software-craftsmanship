@@ -62,7 +62,7 @@ Confirm `SKILL.md` loads and at least one reference resolves by relative path.
 
 ```bash
 # every ID used in a reference
-grep -rhoE '\b[A-Z0-9]+-[A-Z]+\b' skills/engineering-discipline/references/ | sort -u
+grep -rhoE '\b[A-Z0-9]+-[A-Z]+\b' skills/craft/references/ | sort -u
 
 # every ID claimed in the evidence table
 grep -oE '`[A-Z0-9]+-[A-Z*]+`' EVIDENCE.md | tr -d '`' | sort -u
@@ -76,17 +76,17 @@ The worst failure mode for an instruction document is one rule stated twice in d
 
 ```bash
 for n in skip index scope-key "cache key" reset toast token seeder comment; do
-  echo "== $n"; grep -rni "$n" skills/engineering-discipline/ | head -20
+  echo "== $n"; grep -rni "$n" skills/craft/ | head -20
 done
 ```
 
 ## 5. Size and frontmatter
 
 ```bash
-wc -l skills/engineering-discipline/SKILL.md skills/engineering-discipline/references/*.md
+wc -l skills/craft/SKILL.md skills/craft/references/*.md
 
 # description must stay under the 1536-char frontmatter cap
-awk '/^description:/{print length($0)}' skills/engineering-discipline/SKILL.md
+awk '/^description:/{print length($0)}' skills/craft/SKILL.md
 ```
 
 `SKILL.md` stays under ~80 lines. No single reference should exceed ~180.
