@@ -96,7 +96,7 @@ When one PR is explicitly authorized to exceed a single agent's context, chain s
 - Auto-dispatch the next session when the prior lands cleanly. Stop only on a genuine blocker, an interrupt, or completion.
 - First session is heaviest (the architectural spine); mid sessions carry 3–6 items; the final session is the exit gate — closeout doc, PR description, ready-for-review flip.
 - Track baseline test-pass counts across sessions. A regression past baseline minus known deletions is an introduced defect; fix before push.
-- Restate the invariants verbatim every session.
+- Re-paste the contract card every session, and require it back filled in. A later session inherits none of the earlier ones' context and drifts fastest.
 - The closeout doc lists every backlog item as done / partial / not-done-with-reason. Nothing silent; the not-done items become the explicit follow-up scope.
 - When an agent proposes "defer to a follow-up PR", override it. Single-PR mandate means single PR — that suggestion is usually a context-budget hedge, not a structural call.
 

@@ -35,7 +35,7 @@ CRAFT CONTRACT
   Scope               N files (cap M): [paths]
   Reuse               extended <symbol> | new because <reason>
   Scope key           every read/write filters on <key> | N/A, no customer data
-  Capability check    base-vs-branch diff run, output below | N/A, no existing code changed
+  Capability check    REGRESS-DIFF vs base, output pasted | N/A, no existing code changed
   Tests               N passed / N failed / N skipped (baseline N)
   Gates               <command> → <actual output line>, one row per gate
   Tests deleted       none | <name>, subsumed by <name>
